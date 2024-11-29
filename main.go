@@ -22,8 +22,9 @@ import (
 	"log"
 	"net/http"
 	"strconv"
-	"uala_challenge/app"
-	"uala_challenge/app/service"
+
+	"github.com/PatricioYegros/uala_challenge/app"
+	"github.com/PatricioYegros/uala_challenge/app/service"
 
 	"github.com/gin-gonic/gin"
 	swaggerFiles "github.com/swaggo/files"

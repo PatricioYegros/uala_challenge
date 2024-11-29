@@ -4,9 +4,10 @@ import (
 	"context"
 	"errors"
 	"os"
-	"uala_challenge/app/repository"
-	"uala_challenge/app/service"
-	"uala_challenge/app/utils"
+
+	"github.com/PatricioYegros/uala_challenge/app/repository"
+	"github.com/PatricioYegros/uala_challenge/app/service"
+	"github.com/PatricioYegros/uala_challenge/app/utils"
 
 	"github.com/redis/go-redis/v9"
 )

@@ -6,7 +6,8 @@ import (
 	"fmt"
 	"strconv"
 	"time"
-	"uala_challenge/app/models"
+
+	"github.com/PatricioYegros/uala_challenge/app/models"
 
 	"github.com/google/uuid"
 	"github.com/redis/go-redis/v9"

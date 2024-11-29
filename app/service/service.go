@@ -5,9 +5,10 @@ import (
 	"fmt"
 	"log"
 	"slices"
-	"uala_challenge/app/models"
-	"uala_challenge/app/repository"
-	"uala_challenge/app/utils"
+
+	"github.com/PatricioYegros/uala_challenge/app/models"
+	"github.com/PatricioYegros/uala_challenge/app/repository"
+	"github.com/PatricioYegros/uala_challenge/app/utils"
 
 	"github.com/google/uuid"
 )
