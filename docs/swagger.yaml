@@ -1,4 +1,66 @@
 info:
   contact: {}
-paths: {}
+paths:
+  /user/{userID}/follower/{followerID}:
+    post:
+      description: FollowerID start to follow UserID
+      parameters:
+      - description: followerID
+        in: path
+        name: followerID
+        required: true
+        type: integer
+      - description: userID
+        in: path
+        name: userID
+        required: true
+        type: integer
+      produces:
+      - text/plain
+      responses:
+        "200":
+          description: OK
+      summary: Follow User
+      tags:
+      - Twitter
+  /user/{userID}/timeline:
+    get:
+      description: Get the timeline of certain user
+      parameters:
+      - description: userID
+        in: path
+        name: userID
+        required: true
+        type: integer
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+      summary: Timeline
+      tags:
+      - Twitter
+  /user/{userID}/tweet:
+    post:
+      description: User makes a Tweet
+      parameters:
+      - description: userID
+        in: path
+        name: userID
+        required: true
+        type: integer
+      - description: body
+        in: body
+        name: body
+        required: true
+        schema:
+          type: string
+      produces:
+      - text/plain
+      responses:
+        "201":
+          description: Created
+      summary: Tweet
+      tags:
+      - Twitter
 swagger: "2.0"

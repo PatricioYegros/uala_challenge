@@ -3,5 +3,100 @@
     "info": {
         "contact": {}
     },
-    "paths": {}
+    "paths": {
+        "/user/{userID}/follower/{followerID}": {
+            "post": {
+                "description": "FollowerID start to follow UserID",
+                "produces": [
+                    "text/plain"
+                ],
+                "tags": [
+                    "Twitter"
+                ],
+                "summary": "Follow User",
+                "parameters": [
+                    {
+                        "type": "integer",
+                        "description": "followerID",
+                        "name": "followerID",
+                        "in": "path",
+                        "required": true
+                    },
+                    {
+                        "type": "integer",
+                        "description": "userID",
+                        "name": "userID",
+                        "in": "path",
+                        "required": true
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "OK"
+                    }
+                }
+            }
+        },
+        "/user/{userID}/timeline": {
+            "get": {
+                "description": "Get the timeline of certain user",
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "Twitter"
+                ],
+                "summary": "Timeline",
+                "parameters": [
+                    {
+                        "type": "integer",
+                        "description": "userID",
+                        "name": "userID",
+                        "in": "path",
+                        "required": true
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "OK"
+                    }
+                }
+            }
+        },
+        "/user/{userID}/tweet": {
+            "post": {
+                "description": "User makes a Tweet",
+                "produces": [
+                    "text/plain"
+                ],
+                "tags": [
+                    "Twitter"
+                ],
+                "summary": "Tweet",
+                "parameters": [
+                    {
+                        "type": "integer",
+                        "description": "userID",
+                        "name": "userID",
+                        "in": "path",
+                        "required": true
+                    },
+                    {
+                        "description": "body",
+                        "name": "body",
+                        "in": "body",
+                        "required": true,
+                        "schema": {
+                            "type": "string"
+                        }
+                    }
+                ],
+                "responses": {
+                    "201": {
+                        "description": "Created"
+                    }
+                }
+            }
+        }
+    }
 }

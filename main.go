@@ -1,6 +1,6 @@
-// Ualá Challenge - Patricio Yegros
+// Ualá Challenge Patricio Yegros
 //
-// # This is the swagger documentation
+// This is the swagger documentation
 //
 //	Schemes: http
 //	Host: localhost:8080
@@ -27,12 +27,9 @@ import (
 	"github.com/PatricioYegros/uala_challenge/app/service"
 
 	"github.com/gin-gonic/gin"
-	swaggerFiles "github.com/swaggo/files"
-	ginSwagger "github.com/swaggo/gin-swagger"
 )
 
 //go:generate swagger generate spec -o ./swagger.json
-
 var twitterService *service.TwitterService
 
 func init() {
@@ -46,38 +43,22 @@ func init() {
 
 func main() {
 	r := gin.Default()
-	url := ginSwagger.URL("http://localhost:3000/swagger/doc.json")
 
 	r.POST("/user/:userID/tweet", tweet)
 	r.POST("/user/:userID/follower/:followerID", follow)
 	r.GET("/user/:userID/timeline", timeline)
-	r.GET("/swagger/*any", ginSwagger.WrapHandler(swaggerFiles.Handler, url))
 
 	log.Fatalln(r.Run())
 }
 
-// swagger:operation POST /user/{userID}/follower/{followerID}
-// Follow user
-// @Summary Given 2 ids, the followerID begins to follow the userID
-// @Tags Follow
+// @Summary Follow User
+// @Description FollowerID start to follow UserID
+// @Tags Twitter
+// @Param followerID path uint true "followerID"
+// @Param userID path uint true "userID"
 // @Produce text/plain
-//
-// parameters:
-//   - name: userID
-//     type: uint
-//     in: path
-//     description: ID of user to be followed
-//     required: true
-//   - name: followerID
-//     type: uint
-//     in: path
-//     description: ID of the follower
-//     required: true
-//
-// responses:
-// '200':
-//
-//	description: 'Followed correctly'
+// @Success 200
+// @Router /user/{userID}/follower/{followerID} [post]
 func follow(c *gin.Context) {
 	userID, err := strconv.Atoi(c.Param("userID"))
 	if err != nil {
@@ -104,28 +85,14 @@ type TweetRequestBody struct {
 	Body string `json:"content"`
 }
 
-// swagger:operation POST /user/{userID}/tweet
-// Tweet
-// @Summary Create a tweet
-// @Tags Tweet
+// @Summary Tweet
+// @Description User makes a Tweet
+// @Tags Twitter
+// @Param userID path uint true "userID"
+// @Param body body string true "body"
 // @Produce text/plain
-//
-// parameters:
-//   - name: userID
-//     type: uint
-//     in: path
-//     description: ID of owner of the tweet
-//     required: true
-//   - name: body
-//     type: string
-//     in: body
-//     description: Body of the tweet
-//     required: true
-//
-// responses:
-// '201':
-//
-//	description: 'Tweet created correctly'
+// @Success 201
+// @Router /user/{userID}/tweet [post]
 func tweet(c *gin.Context) {
 	userID, err := strconv.Atoi(c.Param("userID"))
 	if err != nil {
@@ -149,23 +116,13 @@ func tweet(c *gin.Context) {
 	c.String(http.StatusCreated, fmt.Sprintf("%d tweet %s created", userID, tweetID))
 }
 
-// swagger:operation GET /user/{userID}/timeline Timeline
-// Get TimeLine
-// @Summary Return the userID's timeline
-// @Tags Timeline
+// @Summary Timeline
+// @Description Get the timeline of certain user
+// @Tags Twitter
+// @Param userID path uint true "userID"
 // @Produce application/json
-//
-// parameters:
-//   - name: userID
-//     type: uint
-//     in: path
-//     description: ID of owner of timeline
-//     required: true
-//
-// responses:
-// '200':
-//
-//	description: 'Timeline obtained correctly'.
+// @Success 200
+// @Router /user/{userID}/timeline [get]
 func timeline(c *gin.Context) {
 	userID, err := strconv.Atoi(c.Param("userID"))
 	if err != nil {
