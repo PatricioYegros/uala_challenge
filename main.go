@@ -25,9 +25,8 @@ import (
 
 	"github.com/PatricioYegros/uala_challenge/app"
 	"github.com/PatricioYegros/uala_challenge/app/service"
+
 	"github.com/gin-gonic/gin"
-	swaggerfiles "github.com/swaggo/files"
-	ginSwagger "github.com/swaggo/gin-swagger"
 )
 
 //go:generate swagger generate spec -o ./swagger.json
@@ -44,8 +43,6 @@ func init() {
 
 func main() {
 	r := gin.Default()
-
-	r.GET("/swagger/*any", ginSwagger.WrapHandler(swaggerfiles.Handler))
 
 	r.POST("/user/:userID/tweet", tweet)
 	r.POST("/user/:userID/follower/:followerID", follow)
