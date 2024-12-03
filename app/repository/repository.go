@@ -26,6 +26,10 @@ type IRepository interface {
 	AddTweetToTimeline(tweetID uuid.UUID, userID uint) error
 	//GetTimeLine returns the list of tweets ids in a user timeline
 	GetTimeLine(userID uint) ([]uuid.UUID, error)
+	//Login logs the user in the app
+	Login(userID uint) error
+	//CheckUserLog checks if the user logged is the user who wants to make the action
+	CheckUserLog(userID uint) (bool, error)
 }
 
 type Repository struct {
@@ -34,6 +38,7 @@ type Repository struct {
 
 const (
 	TweetTTL            = 24 * time.Hour
+	SessionTTL          = 24 * time.Hour
 	MaxTweetsInTimeline = 10
 )
 
@@ -140,6 +145,37 @@ func (repository Repository) GetTimeLine(userID uint) ([]uuid.UUID, error) {
 	}
 
 	return ids, nil
+}
+
+// Login logs the user in the app
+func (repository Repository) Login(userID uint) error {
+	loginKey := "login"
+
+	return repository.Redis.Set(context.Background(), loginKey, userID, SessionTTL).Err()
+}
+
+// CheckUserLog checks if the user logged is the user who wants to make the action
+func (repository Repository) CheckUserLog(userID uint) (bool, error) {
+	loginKey := "login"
+
+	value, err := repository.Redis.Get(context.Background(), loginKey).Result()
+	if err == redis.Nil {
+		return false, nil
+	} else if err != nil {
+		return false, err
+	}
+
+	valueInt, err := strconv.Atoi(value)
+	if err != nil {
+		return false, err
+	}
+
+	if uint(valueInt) == userID {
+		return true, nil
+	} else {
+		return false, nil
+	}
+
 }
 
 // UserFollowersKey returns the key that stores the list of followers of userID in the cache

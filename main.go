@@ -29,6 +29,8 @@ import (
 	"github.com/gin-gonic/gin"
 )
 
+var ErrPermission = "User dont have permission to perform action"
+
 //go:generate swagger generate spec -o ./swagger.json
 var twitterService *service.TwitterService
 
@@ -44,6 +46,7 @@ func init() {
 func main() {
 	r := gin.Default()
 
+	r.POST("/user/login/:userID", login)
 	r.POST("/user/:userID/tweet", tweet)
 	r.POST("/user/:userID/follower/:followerID", follow)
 	r.GET("/user/:userID/timeline", timeline)
@@ -72,13 +75,26 @@ func follow(c *gin.Context) {
 		return
 	}
 
-	err = twitterService.Follow(uint(followerID), uint(userID))
+	log, err := checkUserLog(uint(followerID))
 	if err != nil {
 		returnError(c, err)
 		return
 	}
 
-	c.String(http.StatusOK, fmt.Sprintf("%d has followed %d", followerID, userID))
+	if log {
+
+		err = twitterService.Follow(uint(followerID), uint(userID))
+		if err != nil {
+			returnError(c, err)
+			return
+		}
+
+		c.String(http.StatusNoContent, "")
+
+	} else {
+
+		c.JSON(http.StatusUnauthorized, gin.H{"error": ErrPermission})
+	}
 }
 
 type TweetRequestBody struct {
@@ -100,20 +116,32 @@ func tweet(c *gin.Context) {
 		return
 	}
 
-	var requestBody TweetRequestBody
-
-	if err = c.BindJSON(&requestBody); err != nil {
-		returnError(c, err)
-		return
-	}
-
-	tweetID, err := twitterService.Tweet(uint(userID), requestBody.Body)
+	log, err := checkUserLog(uint(userID))
 	if err != nil {
 		returnError(c, err)
 		return
 	}
 
-	c.String(http.StatusCreated, fmt.Sprintf("%d tweet %s created", userID, tweetID))
+	if log {
+
+		var requestBody TweetRequestBody
+
+		if err = c.BindJSON(&requestBody); err != nil {
+			returnError(c, err)
+			return
+		}
+
+		tweetID, err := twitterService.Tweet(uint(userID), requestBody.Body)
+		if err != nil {
+			returnError(c, err)
+			return
+		}
+
+		c.String(http.StatusCreated, fmt.Sprintf("%d tweet %s created", userID, tweetID))
+
+	} else {
+		c.JSON(http.StatusUnauthorized, gin.H{"error": ErrPermission})
+	}
 }
 
 // @Summary Timeline
@@ -130,15 +158,59 @@ func timeline(c *gin.Context) {
 		return
 	}
 
-	timeline, err := twitterService.GetTimeLine(uint(userID))
+	log, err := checkUserLog(uint(userID))
 	if err != nil {
 		returnError(c, err)
 		return
 	}
 
-	c.IndentedJSON(http.StatusOK, timeline)
+	if log {
+
+		timeline, err := twitterService.GetTimeLine(uint(userID))
+		if err != nil {
+			returnError(c, err)
+			return
+		}
+
+		c.IndentedJSON(http.StatusOK, timeline)
+
+	} else {
+		c.JSON(http.StatusUnauthorized, gin.H{"error": ErrPermission})
+	}
 }
 
 func returnError(c *gin.Context, err error) {
 	c.JSON(http.StatusInternalServerError, err.Error())
+}
+
+// @Summary Login
+// @Description Logs
+// @Tags Twtter
+// @Param userID path uint true "userID"
+// @Produce application/json
+// @Success 200
+// @Router /user/login/:userID [post]
+func login(c *gin.Context) {
+	userID, err := strconv.Atoi(c.Param("userID"))
+	if err != nil {
+		returnError(c, err)
+		return
+	}
+
+	err = twitterService.Login(uint(userID))
+	if err != nil {
+		returnError(c, err)
+		return
+	}
+
+	c.String(http.StatusNoContent, "")
+}
+
+func checkUserLog(userID uint) (bool, error) {
+	value, err := twitterService.CheckUserLog(userID)
+	if err != nil {
+		return false, err
+	}
+
+	return value, nil
 }

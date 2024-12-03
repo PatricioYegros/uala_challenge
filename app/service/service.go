@@ -104,3 +104,21 @@ func (service TwitterService) GetTimeLine(userID uint) ([]models.Tweet, error) {
 
 	return service.Repository.GetTweets(tweetsIDs[0:limitTimeLine])
 }
+
+// Login logs the user in the app
+// Returns err if Redis return error
+func (service TwitterService) Login(userID uint) error {
+	return service.Repository.Login(userID)
+}
+
+// CheckUserLogs checks if the user logged is the user who wants to make the action
+// Rerurns err if Redis return error
+
+func (service TwitterService) CheckUserLog(userID uint) (bool, error) {
+	value, err := service.Repository.CheckUserLog(userID)
+	if err != nil {
+		return false, err
+	}
+
+	return value, nil
+}
